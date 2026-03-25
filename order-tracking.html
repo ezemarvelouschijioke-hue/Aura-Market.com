@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking - Aura Market</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="description" content="Shop the best products at Aura Market - Your premium e-commerce destination">
+<meta name="keywords" content="ecommerce, shop, buy, products, aura market">
+<meta name="author" content="Aura Market">
+    <style>
+        .tracking-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .tracking-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .tracking-search {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+        }
+        .order-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .order-status {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+        }
+        .status-step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+        .status-step::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: -50%;
+            width: 100%;
+            height: 2px;
+            background: #333;
+            z-index: 1;
+        }
+        .status-step:first-child::before {
+            display: none;
+        }
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            position: relative;
+            z-index: 2;
+        }
+        .status-step.completed .status-icon {
+            background: #28a745;
+        }
+        .status-step.active .status-icon {
+            background: #09a5db;
+        }
+        .status-label {
+            font-size: 12px;
+            color: #b0b0b0;
+        }
+        .status-step.completed .status-label {
+            color: #28a745;
+        }
+        .status-step.active .status-label {
+            color: #09a5db;
+        }
+        .tracking-timeline {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #333;
+        }
+        .timeline-icon {
+            width: 30px;
+            color: #09a5db;
+        }
+        .timeline-content {
+            flex: 1;
+        }
+        .timeline-time {
+            color: #b0b0b0;
+            font-size: 12px;
+        }
+        .back-btn {
+            background: #09a5db;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .back-btn:hover {
+            background: #0789b7;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a href="index.html" style="text-decoration: none; color: white;"><h1>Aura Market</h1></a>
+        </div>
+    </nav>
+
+    <div class="tracking-container">
+        <div class="tracking-header">
+            <h2>Track Your Order</h2>
+            <p>Enter your order number to check status</p>
+        </div>
+        
+        <div class="tracking-search">
+            <div class="input-group">
+                <input type="text" id="order-number" class="form-control bg-dark text-white" placeholder="e.g., AURA-12345">
+                <button class="btn btn-primary" onclick="trackOrder()">Track Order</button>
+            </div>
+        </div>
+        
+        <div id="order-details" style="display: none;"></div>
+        
+        <div class="text-center mt-4">
+            <a href="order-history.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Order History
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function trackOrder() {
+            const orderNumber = document.getElementById('order-number').value;
+            if (!orderNumber) {
+                alert('Please enter an order number');
+                return;
+            }
+            
+            // Get orders from localStorage
+            const orders = JSON.parse(localStorage.getItem('AURA_ORDERS')) || [];
+            const order = orders.find(o => o.id === orderNumber || o.id == orderNumber);
+            
+            if (!order) {
+                alert('Order not found');
+                return;
+            }
+            
+            displayOrderDetails(order);
+        }
+        
+        function displayOrderDetails(order) {
+            const container = document.getElementById('order-details');
+            
+            const statusSteps = ['pending', 'processing', 'shipped', 'delivered'];
+            const currentStep = statusSteps.indexOf(order.status);
+            
+            container.style.display = 'block';
+            container.innerHTML = `
+                <div class="order-card">
+                    <h4>Order #${order.id}</h4>
+                    <p>Placed on: ${new Date(order.date).toLocaleString()}</p>
+                    
+                    <div class="order-status">
+                        ${statusSteps.map((step, index) => `
+                            <div class="status-step ${index <= currentStep ? 'completed' : ''} ${index === currentStep ? 'active' : ''}">
+                                <div class="status-icon">
+                                    <i class="fas ${step === 'pending' ? 'fa-clock' : step === 'processing' ? 'fa-box' : step === 'shipped' ? 'fa-truck' : 'fa-check'}"></i>
+                                </div>
+                                <div class="status-label">${step.charAt(0).toUpperCase() + step.slice(1)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="tracking-timeline">
+                        <h5>Tracking Timeline</h5>
+                        ${order.timeline ? order.timeline.map(item => `
+                            <div class="timeline-item">
+                                <div class="timeline-icon"><i class="fas fa-circle"></i></div>
+                                <div class="timeline-content">
+                                    <div>${item.status}</div>
+                                    <div class="timeline-time">${new Date(item.time).toLocaleString()}</div>
+                                </div>
+                            </div>
+                        `).join('') : '<p>No tracking updates yet</p>'}
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bundle Deals - Aura Market</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <meta name="description" content="Shop the best products at Aura Market - Your premium e-commerce destination">
+<meta name="keywords" content="ecommerce, shop, buy, products, aura market">
+<meta name="author" content="Aura Market">
+    <style>
+        .bundle-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .bundle-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .bundle-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-color: #09a5db;
+        }
+        .bundle-badge {
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background: #ff4757;
+            color: white;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .bundle-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .product-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #09a5db;
+        }
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 16px;
+        }
+        .bundle-price {
+            color: #ff4757;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .savings {
+            background: #28a745;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+        }
+        .countdown {
+            background: #0f0f0f;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .countdown-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container-fluid">
+        <a href="index.html" style="text-decoration: none; color: white;"><h1>Aura Market</h1></a>
+        <div class="d-flex align-items-center">
+            <a href="index.html" class="btn btn-outline-light me-2">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="order-history.html" class="btn btn-outline-light me-2">
+                <i class="fa fa-history"></i> Orders
+            </a>
+            <button id="open-cart-btn" class="btn btn-warning ms-3">
+                <span id="cart-count">0</span> <i class="fa fa-cart-shopping"></i> cart
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div class="bundle-container">
+    <h1 class="text-center mb-5">🎁 Bundle Deals - Save More!</h1>
+    
+    <!-- Bundle Deals Grid -->
+    <div class="row" id="bundles-grid"></div>
+    
+    <!-- Bundle Benefits -->
+    <div class="row mt-5">
+        <div class="col-md-4 mb-4">
+            <div class="text-center">
+                <i class="fas fa-tags fa-3x text-warning mb-3"></i>
+                <h4>Extra Savings</h4>
+                <p class="text-muted">Save up to 25% when you buy together</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="text-center">
+                <i class="fas fa-truck fa-3x text-info mb-3"></i>
+                <h4>Free Shipping</h4>
+                <p class="text-muted">Free shipping on all bundle orders</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="text-center">
+                <i class="fas fa-gift fa-3x text-success mb-3"></i>
+                <h4>Bonus Points</h4>
+                <p class="text-muted">Earn double rewards points on bundles</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CART SIDEBAR -->
+<aside id="sidebar-cart" class="cart-sidebar">
+    <div class="cart-header"><h2>Your Cart</h2><button id="close-cart-btn" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button></div>
+    <div class="cart-items"></div>
+    <div class="cart-footer">
+        <div class="d-flex justify-content-between mb-3"><strong>Total:</strong><strong>$<span class="total-price">0.00</span></strong></div>
+        <input type="email" id="email-address" class="form-control mb-2" placeholder="Enter your email for receipt">
+        <button class="checkout-btn" onclick="checkout()"><i class="fa fa-credit-card"></i> Pay with Paystack</button>
+    </div>
+</aside>
+<div id="overlay"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/core/config.js"></script>
+<script src="js/core/storage.js"></script>
+<script src="js/core/utils.js"></script>
+<script src="js/modules/products.js"></script>
+<script src="js/modules/cart.js"></script>
+<script src="js/modules/auth.js"></script>
+<!-- Theme Manager -->
+<script src="js/theme.js"></script>
+<script>
+// Bundle data
+const bundles = [
+    {
+        id: 1,
+        name: "Fashion Bundle",
+        products: [2, 7, 3],
+        price: 59.99,
+        originalPrice: 66.52,
+        discount: 10,
+        image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8",
+        description: "Complete your style with this fashionable combo",
+        endTime: new Date().getTime() + (48 * 60 * 60 * 1000) // 48 hours
+    },
+    {
+        id: 2,
+        name: "Tech Essentials",
+        products: [1, 6],
+        price: 7.99,
+        originalPrice: 8.88,
+        discount: 10,
+        image: "https://images.unsplash.com/photo-1498049794561-7780e7231661",
+        description: "Must-have tech accessories for daily use",
+        endTime: new Date().getTime() + (24 * 60 * 60 * 1000)
+    },
+    {
+        id: 3,
+        name: "Complete Style Pack",
+        products: [2, 3, 7, 11],
+        price: 49.99,
+        originalPrice: 55.99,
+        discount: 11,
+        image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04",
+        description: "Everything you need for a complete look",
+        endTime: new Date().getTime() + (72 * 60 * 60 * 1000)
+    },
+    {
+        id: 4,
+        name: "Beauty & Care",
+        products: [13, 12],
+        price: 19.99,
+        originalPrice: 24.00,
+        discount: 17,
+        image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348",
+        description: "Premium beauty products for self-care",
+        endTime: new Date().getTime() + (36 * 60 * 60 * 1000)
+    }
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadBundles();
+    startCountdowns();
+});
+
+function loadBundles() {
+    const grid = document.getElementById('bundles-grid');
+    
+    grid.innerHTML = bundles.map(bundle => {
+        const bundleProducts = bundle.products.map(id => 
+            ProductService.getById(id)
+        ).filter(p => p);
+        
+        return `
+        <div class="col-md-6 mb-4">
+            <div class="bundle-card">
+                <div class="bundle-badge">Save ${bundle.discount}%</div>
+                <div class="row g-0">
+                    <div class="col-md-5">
+                        <img src="${bundle.image}" class="bundle-image" alt="${bundle.name}">
+                        <div class="mt-3 d-flex justify-content-around">
+                            ${bundleProducts.map(p => `
+                                <img src="${p.img}" class="product-thumb" title="${p.name}">
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card-body">
+                            <h3 class="card-title">${bundle.name}</h3>
+                            <p class="text-muted">${bundle.description}</p>
+                            
+                            <div class="mb-3">
+                                <span class="original-price">$${bundle.originalPrice.toFixed(2)}</span>
+                                <span class="bundle-price ms-3">$${bundle.price.toFixed(2)}</span>
+                                <span class="savings ms-3">Save $${(bundle.originalPrice - bundle.price).toFixed(2)}</span>
+                            </div>
+                            
+                            <p class="mb-2">Includes:</p>
+                            <ul class="list-unstyled">
+                                ${bundleProducts.map(p => `
+                                    <li><i class="fas fa-check text-success me-2"></i>${p.name}</li>
+                                `).join('')}
+                            </ul>
+                            
+                            <div class="countdown mb-3" id="countdown-${bundle.id}">
+                                <span class="countdown-number">24:00:00</span>
+                                <span class="text-muted ms-2">left</span>
+                            </div>
+                            
+                            <button class="btn btn-primary w-100" onclick="addBundleToCart(${bundle.id})">
+                                <i class="fas fa-cart-plus"></i> Add Bundle to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `}).join('');
+}
+
+function startCountdowns() {
+    bundles.forEach(bundle => {
+        const timer = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = bundle.endTime - now;
+            
+            const hours = Math.floor((distance % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+            const minutes = Math.floor((distance % (60 * 60 * 1000)) / (60 * 1000));
+            const seconds = Math.floor((distance % (60 * 1000)) / 1000);
+            
+            const countdownEl = document.getElementById(`countdown-${bundle.id}`);
+            if (countdownEl) {
+                countdownEl.innerHTML = `
+                    <span class="countdown-number">${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</span>
+                    <span class="text-muted ms-2">left</span>
+                `;
+            }
+            
+            if (distance < 0) {
+                clearInterval(timer);
+                const card = document.querySelector(`#countdown-${bundle.id}`).closest('.col-md-6');
+                if (card) card.style.display = 'none';
+            }
+        }, 1000);
+    });
+}
+
+function addBundleToCart(bundleId) {
+    const bundle = bundles.find(b => b.id === bundleId);
+    if (!bundle) return;
+    
+    if (typeof CartService !== 'undefined') {
+        bundle.products.forEach(productId => {
+            CartService.addItem(productId);
+        });
+        
+        // Show success message
+        alert('🎉 Bundle added to cart! You saved $' + (bundle.originalPrice - bundle.price).toFixed(2));
+        openCart();
+    }
+}
+
+function openCart() {
+    document.getElementById('sidebar-cart')?.classList.add('open');
+    document.getElementById('overlay')?.classList.add('active');
+}
+</script>
+</body>
+</html>

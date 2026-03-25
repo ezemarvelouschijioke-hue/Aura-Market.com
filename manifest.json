@@ -1,0 +1,84 @@
+{
+  "name": "Aura Market",
+  "short_name": "Aura",
+  "description": "Shop the best products at Aura Market - Your premium e-commerce destination",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#09a5db",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/72x72/09a5db/ffffff?text=A",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/96x96/09a5db/ffffff?text=A",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/128x128/09a5db/ffffff?text=A",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/144x144/09a5db/ffffff?text=A",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/152x152/09a5db/ffffff?text=A",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/192x192/09a5db/ffffff?text=A",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/384x384/09a5db/ffffff?text=A",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/09a5db/ffffff?text=A",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Shop Now",
+      "short_name": "Shop",
+      "description": "Browse all products",
+      "url": "/index.html",
+      "icons": [{ "src": "https://via.placeholder.com/96x96/09a5db/ffffff?text=Shop", "sizes": "96x96" }]
+    },
+    {
+      "name": "Bundle Deals",
+      "short_name": "Bundles",
+      "description": "Check out our bundle deals",
+      "url": "/bundles.html",
+      "icons": [{ "src": "https://via.placeholder.com/96x96/ff4757/ffffff?text=Bundle", "sizes": "96x96" }]
+    },
+    {
+      "name": "Order History",
+      "short_name": "Orders",
+      "description": "View your orders",
+      "url": "/order-history.html",
+      "icons": [{ "src": "https://via.placeholder.com/96x96/ffc107/000000?text=Orders", "sizes": "96x96" }]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+# Aura Market Robots.txt
+# Generated for optimal SEO
+# https://auramarket.com/robots.txt
+
+User-agent: *
+Allow: /
+Allow: /product-details.html
+Allow: /category.html
+Allow: /bundles.html
+Allow: /index.html
+Allow: /about.html
+Allow: /contact.html
+Allow: /faq.html
+
+# Disallow admin and user areas
+Disallow: /admin.html
+Disallow: /admin-login.html
+Disallow: /admin/
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /account.html
+Disallow: /profile.html
+Disallow: /cart.html
+Disallow: /checkout.html
+Disallow: /order-tracking.html
+Disallow: /order-history.html
+Disallow: /wishlist.html
+Disallow: /compare.html
+Disallow: /returns.html
+Disallow: /support.html
+Disallow: /ticket-details.html
+
+# Disallow resource folders
+Disallow: /js/
+Disallow: /css/
+Disallow: /assets/images/placeholder*
+Disallow: /assets/icons/
+
+# Googlebot specific (optional)
+User-agent: Googlebot
+Allow: /
+Allow: /product-details.html
+Allow: /category.html
+Allow: /bundles.html
+Disallow: /admin*
+Disallow: /login*
+Disallow: /signup*
+Disallow: /account*
+Disallow: /cart*
+Disallow: /checkout*
+Disallow: /wishlist*
+Disallow: /order*
+
+# Bingbot specific (optional)
+User-agent: Bingbot
+Allow: /
+Allow: /product-details.html
+Allow: /category.html
+Disallow: /admin*
+Disallow: /login*
+Disallow: /signup*
+Disallow: /account*
+
+# Sitemap
+Sitemap: https://auramarket.com/sitemap.xml
+Crawl-delay: 5

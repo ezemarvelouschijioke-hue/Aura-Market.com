@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Products - Aura Market</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .compare-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .compare-table {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+        .compare-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .compare-table th, .compare-table td {
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            vertical-align: middle;
+        }
+        .compare-table th {
+            background: #0f0f0f;
+            font-weight: bold;
+            color: #09a5db;
+            width: 150px;
+        }
+        .product-cell {
+            text-align: center;
+            min-width: 200px;
+        }
+        .product-cell img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .product-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .product-price {
+            color: #ffc107;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .add-to-cart-btn {
+            background: #09a5db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .remove-btn {
+            background: transparent;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        .feature-badge {
+            background: #28a745;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 11px;
+            display: inline-block;
+        }
+        .empty-compare {
+            text-align: center;
+            padding: 80px 20px;
+            background: #1a1a1a;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container-fluid">
+        <a href="index.html" style="text-decoration: none; color: white;"><h1>Aura Market</h1></a>
+        <div class="d-flex align-items-center">
+            <a href="index.html" class="btn btn-outline-light me-2">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <button id="open-cart-btn" class="btn btn-warning ms-3">
+                <span id="cart-count">0</span> <i class="fa fa-cart-shopping"></i> cart
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div class="compare-container">
+    <h1 class="mb-4">🔄 Compare Products</h1>
+    
+    <div id="compare-content"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/core/config.js"></script>
+<script src="js/core/storage.js"></script>
+<script src="js/core/utils.js"></script>
+<script src="js/modules/products.js"></script>
+<script src="js/modules/cart.js"></script>
+<script src="js/theme.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCompareProducts();
+    });
+    
+    function loadCompareProducts() {
+        const compareIds = JSON.parse(localStorage.getItem('compare_products')) || [];
+        const compareProducts = compareIds.map(id => ProductService.getById(id)).filter(p => p);
+        const container = document.getElementById('compare-content');
+        
+        if (compareProducts.length === 0) {
+            container.innerHTML = `
+                <div class="empty-compare">
+                    <i class="fas fa-chart-simple fa-4x text-muted mb-3"></i>
+                    <h3>No products to compare</h3>
+                    <p class="text-muted">Add products to compare by clicking the "Compare" button on product cards.</p>
+                    <a href="index.html" class="btn btn-primary mt-3">Browse Products</a>
+                </div>
+            `;
+            return;
+        }
+        
+        // Get all features to compare
+        const features = ['Price', 'Rating', 'Stock', 'Category', 'Description'];
+        
+        container.innerHTML = `
+            <div class="compare-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            ${compareProducts.map(p => `
+                                <th class="product-cell">
+                                    <button class="remove-btn" onclick="removeFromCompare(${p.id})">
+                                        <i class="fas fa-times"></i> Remove
+                                    </button>
+                                    <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150x150/09a5db/ffffff?text=${encodeURIComponent(p.name)}'">
+                                    <div class="product-title">${p.name}</div>
+                                    <div class="product-price">$${p.price.toFixed(2)}</div>
+                                    <button class="add-to-cart-btn" onclick="addToCart(${p.id})">
+                                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                                    </button>
+                                </th>
+                            `).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Rating</strong></td>
+                            ${compareProducts.map(p => `
+                                <td class="text-center">
+                                    <div class="text-warning">${'★'.repeat(Math.floor(p.rating || 0))}${'☆'.repeat(5 - Math.floor(p.rating || 0))}</div>
+                                    <small>${p.rating || 0}/5 (${p.reviews || 0} reviews)</small>
+                                </td>
+                            `).join('')}
+                        </tr>
+                        <tr>
+                            <td><strong>Stock</strong></td>
+                            ${compareProducts.map(p => `
+                                <td class="text-center">
+                                    ${p.stock > 0 ? 
+                                        `<span class="text-success">✓ In Stock (${p.stock} left)</span>` : 
+                                        `<span class="text-danger">✗ Out of Stock</span>`
+                                    }
+                                </td>
+                            `).join('')}
+                        </tr>
+                        <tr>
+                            <td><strong>Category</strong></td>
+                            ${compareProducts.map(p => `
+                                <td class="text-center">${p.category}</td>
+                            `).join('')}
+                        </tr>
+                        <tr>
+                            <td><strong>Sale</strong></td>
+                            ${compareProducts.map(p => `
+                                <td class="text-center">
+                                    ${p.isOnSale ? 
+                                        `<span class="feature-badge">${Math.round((1 - p.salePrice/p.price) * 100)}% OFF</span>` : 
+                                        `<span class="text-muted">No sale</span>`
+                                    }
+                                </td>
+                            `).join('')}
+                        </tr>
+                        <tr>
+                            <td><strong>Description</strong></td>
+                            ${compareProducts.map(p => `
+                                <td class="text-center">${p.description?.substring(0, 100) || 'No description'}...</td>
+                            `).join('')}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+    
+    function removeFromCompare(productId) {
+        let compareList = JSON.parse(localStorage.getItem('compare_products')) || [];
+        compareList = compareList.filter(id => id !== productId);
+        localStorage.setItem('compare_products', JSON.stringify(compareList));
+        loadCompareProducts();
+        Utils.showToast('Removed from comparison', 'info');
+    }
+    
+    function addToCart(productId) {
+        if (CartService) {
+            CartService.addItem(productId);
+            Utils.showToast('Added to cart!', 'success');
+            openCart();
+        }
+    }
+    
+    function openCart() {
+        document.getElementById('sidebar-cart')?.classList.add('open');
+        document.getElementById('overlay')?.classList.add('active');
+    }
+</script>
+
+<!-- CART SIDEBAR -->
+<aside id="sidebar-cart" class="cart-sidebar">
+    <div class="cart-header"><h2>Your Cart</h2><button id="close-cart-btn" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button></div>
+    <div class="cart-items"></div>
+    <div class="cart-footer">
+        <div class="d-flex justify-content-between mb-3"><strong>Total:</strong><strong>$<span class="total-price">0.00</span></strong></div>
+        <input type="email" id="email-address" class="form-control mb-2" placeholder="Enter your email for receipt">
+        <button class="checkout-btn" onclick="checkout()"><i class="fa fa-credit-card"></i> Pay with Paystack</button>
+    </div>
+</aside>
+<div id="overlay"></div>
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Help Center - Aura Market</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <meta name="description" content="Shop the best products at Aura Market - Your premium e-commerce destination">
+<meta name="keywords" content="ecommerce, shop, buy, products, aura market">
+<meta name="author" content="Aura Market">
+    <style>
+        .faq-container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .ai-chat-section {
+            background: linear-gradient(135deg, #09a5db, #0789b7);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .ai-chat-section h2 {
+            color: white;
+            margin-bottom: 10px;
+        }
+        .ai-chat-section p {
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 20px;
+        }
+        .chat-input-group {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input-group input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+        }
+        .chat-input-group button {
+            padding: 15px 30px;
+            background: #ffc107;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .chat-input-group button:hover {
+            background: #ffcd38;
+            transform: scale(1.02);
+        }
+        .chat-response {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            border: 1px solid #333;
+        }
+        .chat-response.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        .response-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+        .response-header i {
+            font-size: 24px;
+            color: #09a5db;
+        }
+        .response-text {
+            line-height: 1.6;
+            color: #b0b0b0;
+        }
+        .faq-category {
+            margin-bottom: 40px;
+        }
+        .faq-category h3 {
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 4px solid #09a5db;
+        }
+        .faq-item {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .faq-question {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .faq-question:hover {
+            background: #252525;
+        }
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #0f0f0f;
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+        .faq-item.open .faq-answer {
+            padding: 20px;
+            max-height: 500px;
+        }
+        .faq-item.open .faq-question i {
+            transform: rotate(180deg);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 10px 0;
+        }
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #09a5db;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container-fluid">
+        <a href="index.html" style="text-decoration: none; color: white;"><h1>Aura Market</h1></a>
+        <div class="d-flex align-items-center">
+            <a href="index.html" class="btn btn-outline-light me-2">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <button id="open-cart-btn" class="btn btn-warning ms-3">
+                <span id="cart-count">0</span> <i class="fa fa-cart-shopping"></i> cart
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div class="faq-container">
+    <!-- AI Chat Section -->
+    <div class="ai-chat-section">
+        <i class="fas fa-robot" style="font-size: 48px; color: white; margin-bottom: 15px;"></i>
+        <h2>Ask Aura AI Assistant</h2>
+        <p>Get instant answers about orders, returns, products, and more!</p>
+        
+        <div class="chat-input-group">
+            <input type="text" id="user-question" placeholder="e.g., How do I return an item?" onkeypress="handleQuestionKey(event)">
+            <button onclick="askAI()">
+                <i class="fas fa-paper-plane"></i> Ask
+            </button>
+        </div>
+        
+        <div class="chat-response" id="chat-response">
+            <div class="response-header">
+                <i class="fas fa-robot"></i>
+                <strong>Aura AI Assistant</strong>
+            </div>
+            <div class="response-text" id="response-text"></div>
+            <div class="typing-indicator" id="typing-indicator" style="display: none;">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Categories -->
+    <div class="faq-category">
+        <h3>📦 Orders & Shipping</h3>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>How long does shipping take?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                Standard shipping takes 3-5 business days. Express shipping (1-2 days) available at checkout. Free shipping on orders over $50.
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>How can I track my order?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                Go to <a href="order-tracking.html">Order Tracking</a> and enter your order number. You'll also receive tracking updates via email.
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>Do you ship internationally?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                Currently we ship within Nigeria only. International shipping coming soon!
+            </div>
+        </div>
+    </div>
+
+    <div class="faq-category">
+        <h3>🔄 Returns & Refunds</h3>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>What is your return policy?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                Returns accepted within 30 days of delivery. Items must be unused and in original packaging. Contact support to initiate return.
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>How long do refunds take?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                Refunds are processed within 3-5 business days after we receive the returned item. You'll receive confirmation via email.
+            </div>
+        </div>
+    </div>
+
+    <div class="faq-category">
+        <h3>💳 Payments & Coupons</h3>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>What payment methods do you accept?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                We accept Paystack, all major credit/debit cards, and bank transfers. All payments are secure and encrypted.
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>How do I use a coupon code?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                Enter your coupon code in the cart sidebar and click "Apply". ``
+            </div>
+        </div>
+    </div>
+
+    <div class="faq-category">
+        <h3>🎁 Products & Bundles</h3>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>What are bundle deals?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                Bundle deals let you buy multiple products together at a discounted price. Check our <a href="bundles.html">Bundles page</a> for current offers.
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>How do flash sales work?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                Flash sales are limited-time discounts that appear on our homepage. Grab them before the timer runs out!
+            </div>
+        </div>
+    </div>
+
+    <div class="faq-category">
+        <h3>👤 Account & Rewards</h3>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>How do I earn rewards points?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                Earn 10 points for every $1 spent. Redeem 100 points for $1 off your next purchase. Check your points in the account section.
+            </div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>How do I reset my password?</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                Click "Forgot Password" on the login page. We'll send a reset link to your registered email.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/core/config.js"></script>
+<script src="js/core/storage.js"></script>
+<script src="js/core/utils.js"></script>
+<script src="js/modules/auth.js"></script>
+<script src="js/modules/cart.js"></script>
+<script src="js/theme.js"></script>
+<script>
+// ===== GEMINI AI FAQ SYSTEM =====
+const USE_AI_API = true;  // ← SET TO true
+const API_KEY = "AIzaSyAjfV9QTcRz55-2t2r0UeBeu3prjaj5Z2A";  // ← PUT YOUR KEY HERE
+
+async function askAI() {
+    const question = document.getElementById('user-question').value.trim();
+    if (!question) return;
+    
+    const responseDiv = document.getElementById('chat-response');
+    const responseText = document.getElementById('response-text');
+    const typingIndicator = document.getElementById('typing-indicator');
+    
+    responseDiv.classList.add('show');
+    typingIndicator.style.display = 'flex';
+    responseText.innerHTML = '';
+    
+    let answer = await getGeminiAnswer(question);
+    
+    typingIndicator.style.display = 'none';
+    responseText.innerHTML = answer;
+}
+
+async function getGeminiAnswer(question) {
+    if (!API_KEY || !USE_AI_API) {
+        return getLocalAnswer(question);
+    }
+    
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{
+                        text: `You are Aura Market AI assistant. Answer concisely: ${question}`
+                    }]
+                }],
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 300
+                }
+            })
+        });
+        
+        const data = await response.json();
+        return data.candidates?.[0]?.content?.parts?.[0]?.text || getLocalAnswer(question);
+    } catch (error) {
+        console.log('API error:', error);
+        return getLocalAnswer(question);
+    }
+}
+
+function getLocalAnswer(question) {
+    const q = question.toLowerCase();
+    
+    if (q.includes('order') && q.includes('track')) {
+        return "Track your order at <a href='order-tracking.html'>Order Tracking Page</a>. Enter your order number.";
+    }
+    if (q.includes('shipping') || q.includes('delivery')) {
+        return "Free shipping on orders over $50. Standard: 3-5 days. Express: 1-2 days.";
+    }
+    if (q.includes('return') || q.includes('refund')) {
+        return "Returns accepted within 30 days. Contact support@auramarket.com to initiate.";
+    }
+    if (q.includes('payment') || q.includes('pay')) {
+        return "We accept Paystack, cards, and bank transfers. All payments secure.";
+    }
+    if (q.includes('coupon') || q.includes('discount')) {
+        return "Current coupons: WELCOME10 (10% off), SAVE20 (20% off $50+), FLAT5 ($5 off $20+).";
+    }
+    if (q.includes('bundle')) {
+        return "Check <a href='bundles.html'>Bundle Deals</a> for discounted products!";
+    }
+    if (q.includes('flash') || q.includes('sale')) {
+        return "Flash sales on homepage with countdown timers. Grab them fast!";
+    }
+    if (q.includes('points') || q.includes('reward')) {
+        return "Earn 10 points per $1. 100 points = $1 off. Check Account for points.";
+    }
+    if (q.includes('hello') || q.includes('hi')) {
+        return "Hello! 👋 Ask about orders, shipping, returns, payments, or products!";
+    }
+    
+    return "I'm here to help! Check our FAQ sections below or contact support@auramarket.com.";
+}
+
+function handleQuestionKey(event) {
+    if (event.key === 'Enter') askAI();
+}
+
+function toggleFAQ(element) {
+    const item = element.closest('.faq-item');
+    item.classList.toggle('open');
+}
+
+</script>
+
+</body>
+</html>

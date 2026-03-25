@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Returns & Refunds - Aura Market</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .returns-container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .return-policy {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .return-item {
+            background: #0f0f0f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        .return-item:hover {
+            border-color: #09a5db;
+        }
+        .return-form {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        .reason-select {
+            width: 100%;
+            padding: 10px;
+            background: #0f0f0f;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 5px;
+        }
+        .return-status {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        .status-approved { background: #28a745; color: white; }
+        .status-pending { background: #ffc107; color: black; }
+        .status-rejected { background: #dc3545; color: white; }
+        .status-shipped { background: #17a2b8; color: white; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container-fluid">
+        <a href="index.html" style="text-decoration: none; color: white;"><h1>Aura Market</h1></a>
+        <div class="d-flex align-items-center">
+            <a href="index.html" class="btn btn-outline-light me-2">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="order-history.html" class="btn btn-outline-light me-2">
+                <i class="fa fa-history"></i> Orders
+            </a>
+            <button id="open-cart-btn" class="btn btn-warning ms-3">
+                <span id="cart-count">0</span> <i class="fa fa-cart-shopping"></i> cart
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div class="returns-container">
+    <h1 class="mb-4">🔄 Returns & Refunds</h1>
+    
+    <!-- Return Policy -->
+    <div class="return-policy">
+        <h3><i class="fas fa-file-alt"></i> Return Policy</h3>
+        <div class="row mt-3">
+            <div class="col-md-4 mb-3">
+                <div class="text-center">
+                    <i class="fas fa-calendar-alt fa-2x text-info"></i>
+                    <h6 class="mt-2">30 Days Returns</h6>
+                    <small class="text-muted">Return within 30 days of delivery</small>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="text-center">
+                    <i class="fas fa-box-open fa-2x text-success"></i>
+                    <h6 class="mt-2">Unused Condition</h6>
+                    <small class="text-muted">Items must be unused with original packaging</small>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="text-center">
+                    <i class="fas fa-money-bill-wave fa-2x text-warning"></i>
+                    <h6 class="mt-2">Full Refund</h6>
+                    <small class="text-muted">Full refund including original shipping</small>
+                </div>
+            </div>
+        </div>
+        <hr class="border-secondary">
+        <h5>Steps to Return:</h5>
+        <ol class="text-muted">
+            <li>Select the order from your order history</li>
+            <li>Choose the items to return</li>
+            <li>Select reason for return</li>
+            <li>Print return label (we'll email it)</li>
+            <li>Ship the item back</li>
+            <li>Receive refund within 5-7 business days</li>
+        </ol>
+    </div>
+    
+    <!-- Return Request Form -->
+    <div class="return-form">
+        <h4>Request a Return</h4>
+        <form id="return-form">
+            <div class="mb-3">
+                <label class="form-label">Order Number *</label>
+                <input type="text" id="return-order" class="form-control bg-dark text-white" placeholder="e.g., AURA-12345" required>
+                <div id="order-error" class="text-danger small mt-1" style="display: none;">Order not found</div>
+            </div>
+            
+            <div id="order-items" style="display: none;">
+                <div class="mb-3">
+                    <label class="form-label">Select Items to Return *</label>
+                    <div id="items-list"></div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Reason for Return *</label>
+                    <select id="return-reason" class="form-select bg-dark text-white" required>
+                        <option value="">Select a reason</option>
+                        <option value="defective">Product is defective</option>
+                        <option value="wrong">Wrong item received</option>
+                        <option value="damaged">Damaged during shipping</option>
+                        <option value="not-as-described">Not as described</option>
+                        <option value="changed-mind">Changed mind</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Additional Details</label>
+                    <textarea id="return-details" class="form-control bg-dark text-white" rows="3" placeholder="Please provide more details..."></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="return-terms" required>
+                        <label class="form-check-label">I confirm that the item is in original condition and packaging</label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Submit Return Request
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Return History -->
+    <div class="mt-4">
+        <h4>Return History</h4>
+        <div id="returns-history"></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/core/config.js"></script>
+<script src="js/core/storage.js"></script>
+<script src="js/core/utils.js"></script>
+<script src="js/modules/products.js"></script>
+<script src="js/modules/auth.js"></script>
+<script src="js/theme.js"></script>
+<script>
+    let returns = JSON.parse(localStorage.getItem('returns')) || [];
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        loadReturnsHistory();
+    });
+    
+    document.getElementById('return-order').addEventListener('input', () => {
+        const orderNumber = document.getElementById('return-order').value;
+        const orders = JSON.parse(localStorage.getItem('AURA_ORDERS')) || [];
+        const order = orders.find(o => o.id === orderNumber);
+        const errorDiv = document.getElementById('order-error');
+        const itemsDiv = document.getElementById('order-items');
+        
+        if (order && order.items) {
+            errorDiv.style.display = 'none';
+            itemsDiv.style.display = 'block';
+            loadOrderItems(order);
+        } else if (orderNumber.length > 5) {
+            errorDiv.style.display = 'block';
+            itemsDiv.style.display = 'none';
+        } else {
+            errorDiv.style.display = 'none';
+            itemsDiv.style.display = 'none';
+        }
+    });
+    
+    function loadOrderItems(order) {
+        const container = document.getElementById('items-list');
+        container.innerHTML = order.items.map((item, index) => `
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="return-items" value="${item.id}" data-index="${index}">
+                <label class="form-check-label">
+                    ${item.name} - $${item.price} x ${item.quantity || 1}
+                </label>
+            </div>
+        `).join('');
+    }
+    
+    document.getElementById('return-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const orderNumber = document.getElementById('return-order').value;
+        const reason = document.getElementById('return-reason').value;
+        const details = document.getElementById('return-details').value;
+        const terms = document.getElementById('return-terms').checked;
+        
+        const selectedItems = document.querySelectorAll('input[name="return-items"]:checked');
+        
+        if (selectedItems.length === 0) {
+            Utils.showToast('Please select at least one item to return', 'error');
+            return;
+        }
+        
+        if (!reason) {
+            Utils.showToast('Please select a reason', 'error');
+            return;
+        }
+        
+        if (!terms) {
+            Utils.showToast('Please confirm terms', 'error');
+            return;
+        }
+        
+        const orders = JSON.parse(localStorage.getItem('AURA_ORDERS')) || [];
+        const order = orders.find(o => o.id === orderNumber);
+        
+        const returnItems = Array.from(selectedItems).map(checkbox => {
+            const index = checkbox.dataset.index;
+            return order.items[index];
+        });
+        
+        const returnRequest = {
+            id: 'RET-' + Date.now(),
+            orderId: orderNumber,
+            items: returnItems,
+            reason,
+            details,
+            status: 'pending',
+            requestedAt: new Date().toISOString(),
+            refundAmount: returnItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0)
+        };
+        
+        returns.push(returnRequest);
+        localStorage.setItem('returns', JSON.stringify(returns));
+        
+        Utils.showToast('Return request submitted! We\'ll process within 2-3 days.', 'success');
+        document.getElementById('return-form').reset();
+        document.getElementById('order-items').style.display = 'none';
+        loadReturnsHistory();
+    });
+    
+    function loadReturnsHistory() {
+        const container = document.getElementById('returns-history');
+        const userReturns = returns.filter(r => r.orderId);
+        
+        if (userReturns.length === 0) {
+            container.innerHTML = '<p class="text-muted">No return requests yet.</p>';
+            return;
+        }
+        
+        container.innerHTML = userReturns.map(r => `
+            <div class="return-item">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <strong>Return #${r.id}</strong>
+                        <div class="small text-muted">Order: ${r.orderId}</div>
+                    </div>
+                    <div>
+                        <span class="return-status status-${r.status}">${r.status.toUpperCase()}</span>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <div><strong>Items:</strong> ${r.items.map(i => i.name).join(', ')}</div>
+                    <div><strong>Reason:</strong> ${r.reason}</div>
+                    <div><strong>Refund Amount:</strong> <span class="text-warning">$${r.refundAmount.toFixed(2)}</span></div>
+                    <div class="text-muted small">Requested: ${new Date(r.requestedAt).toLocaleString()}</div>
+                </div>
+                <div class="mt-2">
+                    ${r.status === 'approved' ? `
+                        <div class="text-success">
+                            <i class="fas fa-check-circle"></i> Return approved! Refund will be processed within 5-7 business days.
+                        </div>
+                    ` : r.status === 'rejected' ? `
+                        <div class="text-danger">
+                            <i class="fas fa-times-circle"></i> Return rejected. Contact support for more details.
+                        </div>
+                    ` : `
+                        <div class="text-warning small">
+                            <i class="fas fa-clock"></i> Awaiting review. We'll update within 2-3 business days.
+                        </div>
+                    `}
+                </div>
+            </div>
+        `).join('');
+    }
+</script>
+</body>
+</html>

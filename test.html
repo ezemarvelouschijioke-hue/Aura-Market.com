@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+    <h1>Product Test</h1>
+    <div id="output"></div>
+
+    <script src="js/core/config.js"></script>
+    <script src="js/core/storage.js"></script>
+    <script src="js/core/utils.js"></script>
+    <script src="js/modules/products.js"></script>
+    <script>
+        // Test if products loaded
+        const output = document.getElementById('output');
+        
+        if (typeof products !== 'undefined') {
+            output.innerHTML = `<h2>✅ Products loaded: ${products.length} items</h2>`;
+            output.innerHTML += '<ul>' + products.map(p => 
+                `<li>${p.name} - $${p.price} - ${p.img}</li>`
+            ).join('') + '</ul>';
+        } else {
+            output.innerHTML = '<h2 style="color:red">❌ Products not loaded!</h2>';
+        }
+        
+        console.log('Products:', products);
+    </script>
+</body>
+</html>

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ===== SEO META TAGS ===== -->
+    <meta name="description" content="Manage your Aura Market account, view orders, track deliveries, and update your profile.">
+    <meta name="keywords" content="my account, order history, profile, Aura Market account">
+    <meta name="robots" content="noindex, follow">
+    
+
+    <title>My Account - Aura Market</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+
+    <style>
+        .account-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        .account-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .account-header h3 {
+            color: #09a5db;
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #333;
+        }
+        .info-label {
+            color: #b0b0b0;
+        }
+        .info-value {
+            color: white;
+            font-weight: bold;
+        }
+        .order-item {
+            background: #0f0f0f;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .security-section {
+            background: #0f0f0f;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #333;
+        }
+        .security-section h4 {
+            color: #ffc107;
+            margin-bottom: 15px;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: #09a5db;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        .captcha-box {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #09a5db;
+            display: none;
+        }
+        .captcha-box.show {
+            display: block;
+        }
+        .captcha-question {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffc107;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .badge-tier {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-bronze { background: #CD7F32; color: black; }
+        .badge-silver { background: #C0C0C0; color: black; }
+        .badge-gold { background: #FFD700; color: black; }
+        .badge-platinum { background: #E5E4E2; color: black; }
+        .badge-diamond { background: #B9F2FF; color: black; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a href="index.html" style="text-decoration: none; color: white;"><h1>Aura Market</h1></a>
+            <div class="d-flex align-items-center">
+                <a href="order-history.html" class="btn btn-outline-light me-2">
+                    <i class="fa fa-history"></i> Orders
+                </a>
+                <a href="support.html" class="btn btn-outline-light me-2">
+                    <i class="fas fa-headset"></i> Support
+                </a>
+                <button id="logout-btn" class="btn btn-outline-light" onclick="logout()">
+                    <i class="fa fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="account-container">
+        <div class="account-header">
+            <h3>My Account</h3>
+            <div id="loyalty-badge" class="mt-2"></div>
+        </div>
+        
+        <!-- Basic Info -->
+        <div class="info-item">
+            <span class="info-label">Name:</span>
+            <span class="info-value" id="user-name">Loading...</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Email:</span>
+            <span class="info-value" id="user-email">Loading...</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Member Since:</span>
+            <span class="info-value" id="user-joined">Loading...</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Rewards Points:</span>
+            <span class="info-value" id="user-points">0</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Loyalty Tier:</span>
+            <span class="info-value" id="user-tier">Bronze</span>
+        </div>
+        
+        <!-- Birthday Section -->
+        <div class="security-section mt-3">
+            <h4><i class="fas fa-birthday-cake"></i> Birthday Discount</h4>
+            <p class="text-muted small">Get 20% off on your birthday!</p>
+            <input type="date" id="birthday-date" class="form-control bg-dark text-white mb-2">
+            <button class="btn btn-primary btn-sm" onclick="setBirthday()">Save Birthday</button>
+            <div id="birthday-message" class="small mt-2 text-warning"></div>
+        </div>
+        
+        <!-- 🔒 SECURITY SECTION (2FA + CAPTCHA) -->
+        <div class="security-section">
+            <h4><i class="fas fa-shield-alt"></i> Security Settings</h4>
+            
+            <!-- 2FA Toggle -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <strong>Two-Factor Authentication (2FA)</strong>
+                    <p class="text-muted small mb-0">Add an extra layer of security to your account</p>
+                </div>
+                <div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="twofa-toggle" onchange="toggle2FA()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- 2FA Verification Modal (hidden initially) -->
+            <div id="twofa-verify" style="display: none;" class="mt-3 p-3 bg-dark rounded">
+                <p class="mb-2">Enter the 6-digit code sent to your email:</p>
+                <div class="d-flex gap-2">
+                    <input type="text" id="twofa-code" class="form-control bg-secondary text-white" maxlength="6" placeholder="000000">
+                    <button class="btn btn-primary" onclick="verify2FA()">Verify</button>
+                </div>
+                <p class="text-muted small mt-2">Code expires in 5 minutes</p>
+            </div>
+            
+            <!-- 2FA Status -->
+            <div id="twofa-status" class="small mt-2"></div>
+            
+            <hr class="border-secondary">
+            
+            <!-- CAPTCHA Settings -->
+            <div class="mt-3">
+                <strong>CAPTCHA Verification</strong>
+                <p class="text-muted small">Protect your account from bots</p>
+                
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="captcha-toggle" onchange="toggleCaptcha()">
+                    <label class="form-check-label" for="captcha-toggle">
+                        Require CAPTCHA for login
+                    </label>
+                </div>
+                
+                <!-- CAPTCHA Test Box -->
+                <div id="captcha-test-box" class="captcha-box mt-3">
+                    <p>Test CAPTCHA (for demonstration):</p>
+                    <div class="captcha-question" id="captcha-question">5 + 3 = ?</div>
+                    <div class="d-flex gap-2 mt-2">
+                        <input type="text" id="captcha-answer" class="form-control bg-secondary text-white" placeholder="Enter answer">
+                        <button class="btn btn-primary btn-sm" onclick="testCaptcha()">Verify</button>
+                    </div>
+                    <div id="captcha-result" class="small mt-2"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Login History -->
+        <div class="security-section mt-3">
+            <h4><i class="fas fa-history"></i> Recent Login Activity</h4>
+            <div id="login-history" class="small">
+                <p class="text-muted">No recent logins</p>
+            </div>
+        </div>
+        
+        <!-- Referral Link -->
+        <div class="security-section mt-3">
+            <h4><i class="fas fa-link"></i> Referral Program</h4>
+            <p class="text-muted small">Share your link and earn 10% of friend's purchases!</p>
+            <div class="input-group">
+                <input type="text" id="referral-link" class="form-control bg-dark text-white" readonly>
+                <button class="btn btn-primary" onclick="copyReferralLink()">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+            <div id="referral-earnings" class="small text-warning mt-2"></div>
+        </div>
+        
+        <!-- Recent Orders -->
+        <h5 class="mt-4 mb-3">Recent Orders</h5>
+        <div id="recent-orders">
+            <p class="text-muted">No orders yet</p>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="order-history.html" class="btn btn-primary">View All Orders</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/core/config.js"></script>
+    <script src="js/core/storage.js"></script>
+    <script src="js/core/utils.js"></script>
+    <script src="js/modules/auth.js"></script>
+    <script src="js/modules/security.js"></script>
+    <script src="js/modules/marketing.js"></script>
+    <script src="js/modules/advanced-admin.js"></script>
+    
+    <script>
+        let currentUser = null;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            loadSecuritySettings();
+            loadLoginHistory();
+            loadReferralInfo();
+            checkBirthdayDiscount();
+        });
+        
+        function loadUserData() {
+            const user = AuthService.getCurrentUser();
+            const users = StorageService.getUsers();
+            
+            if (user) {
+                currentUser = user;
+                document.getElementById('user-name').textContent = user.name || 'N/A';
+                document.getElementById('user-email').textContent = user.email || 'N/A';
+                
+                const fullUser = users.find(u => u.email === user.email);
+                if (fullUser && fullUser.createdAt) {
+                    const date = new Date(fullUser.createdAt).toLocaleDateString();
+                    document.getElementById('user-joined').textContent = date;
+                }
+                
+                // Load rewards points
+                if (typeof RewardsService !== 'undefined') {
+                    const points = RewardsService.getPoints(user.id);
+                    document.getElementById('user-points').textContent = points;
+                    
+                    // Load loyalty tier
+                    const tier = RewardsService.getTier(points);
+                    document.getElementById('user-tier').textContent = tier.name;
+                    
+                    // Show badge
+                    const badgeClass = `badge-${tier.name.toLowerCase()}`;
+                    document.getElementById('loyalty-badge').innerHTML = `
+                        <span class="badge-tier ${badgeClass}">
+                            <i class="fas ${tier.icon}"></i> ${tier.name} Member (${tier.discount}% off)
+                        </span>
+                    `;
+                }
+                
+                loadRecentOrders(user.email);
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // ===== 2FA FUNCTIONS =====
+        function loadSecuritySettings() {
+            const userId = currentUser?.id;
+            if (!userId) return;
+            
+            const twofaEnabled = SecurityService.twoFactorEnabled[userId];
+            if (twofaEnabled) {
+                document.getElementById('twofa-toggle').checked = true;
+                document.getElementById('twofa-status').innerHTML = '<span class="text-success">✓ 2FA is enabled</span>';
+            }
+            
+            const captchaEnabled = localStorage.getItem(`captcha_${userId}`) === 'true';
+            if (captchaEnabled) {
+                document.getElementById('captcha-toggle').checked = true;
+            }
+        }
+        
+        function toggle2FA() {
+            const isEnabled = document.getElementById('twofa-toggle').checked;
+            const userId = currentUser?.id;
+            
+            if (isEnabled) {
+                // Show verification box
+                document.getElementById('twofa-verify').style.display = 'block';
+                const code = SecurityService.enable2FA(userId);
+                Utils.showToast(`Your 2FA code: ${code}`, 'info');
+            } else {
+                // Disable 2FA
+                SecurityService.twoFactorEnabled[userId] = false;
+                localStorage.setItem('two_factor_enabled', JSON.stringify(SecurityService.twoFactorEnabled));
+                document.getElementById('twofa-status').innerHTML = '<span class="text-muted">2FA disabled</span>';
+                Utils.showToast('2FA disabled', 'info');
+            }
+        }
+        
+        function verify2FA() {
+            const code = document.getElementById('twofa-code').value;
+            const userId = currentUser?.id;
+            
+            if (SecurityService.verify2FA(userId, code)) {
+                document.getElementById('twofa-verify').style.display = 'none';
+                document.getElementById('twofa-status').innerHTML = '<span class="text-success">✓ 2FA is enabled</span>';
+                Utils.showToast('2FA enabled successfully!', 'success');
+            }
+        }
+        
+        // ===== CAPTCHA FUNCTIONS =====
+        function toggleCaptcha() {
+            const isEnabled = document.getElementById('captcha-toggle').checked;
+            const userId = currentUser?.id;
+            
+            localStorage.setItem(`captcha_${userId}`, isEnabled);
+            
+            if (isEnabled) {
+                Utils.showToast('CAPTCHA enabled for login', 'success');
+                // Show test box
+                document.getElementById('captcha-test-box').classList.add('show');
+                generateCaptchaQuestion();
+            } else {
+                Utils.showToast('CAPTCHA disabled', 'info');
+                document.getElementById('captcha-test-box').classList.remove('show');
+            }
+        }
+        
+        function generateCaptchaQuestion() {
+            const num1 = Math.floor(Math.random() * 10);
+            const num2 = Math.floor(Math.random() * 10);
+            const result = num1 + num2;
+            document.getElementById('captcha-question').textContent = `${num1} + ${num2} = ?`;
+            localStorage.setItem('captcha_result', result);
+        }
+        
+        function testCaptcha() {
+            const answer = parseInt(document.getElementById('captcha-answer').value);
+            const result = parseInt(localStorage.getItem('captcha_result'));
+            const resultDiv = document.getElementById('captcha-result');
+            
+            if (answer === result) {
+                resultDiv.innerHTML = '<span class="text-success">✓ Verified successfully!</span>';
+                generateCaptchaQuestion();
+                document.getElementById('captcha-answer').value = '';
+            } else {
+                resultDiv.innerHTML = '<span class="text-danger">✗ Wrong answer. Try again!</span>';
+            }
+        }
+        
+        // ===== LOGIN HISTORY =====
+        function loadLoginHistory() {
+            const history = JSON.parse(localStorage.getItem('login_history')) || [];
+            const userHistory = history.filter(h => h.email === currentUser?.email).slice(0, 5);
+            const container = document.getElementById('login-history');
+            
+            if (userHistory.length === 0) {
+                container.innerHTML = '<p class="text-muted">No recent logins</p>';
+                return;
+            }
+            
+            container.innerHTML = userHistory.map(entry => `
+                <div class="border-bottom border-secondary py-2">
+                    <div>${new Date(entry.timestamp).toLocaleString()}</div>
+                    <div class="text-muted small">IP: ${entry.ip} • ${entry.location || 'Unknown'}</div>
+                </div>
+            `).join('');
+        }
+        
+        // ===== REFERRAL PROGRAM =====
+        function loadReferralInfo() {
+            if (typeof MarketingService === 'undefined') return;
+            
+            let referralCode = MarketingService.referralCodes[currentUser?.id];
+            if (!referralCode) {
+                referralCode = MarketingService.generateReferralCode(currentUser?.id);
+            }
+            
+            const link = `${window.location.origin}/index.html?ref=${referralCode}`;
+            document.getElementById('referral-link').value = link;
+            
+            // Load affiliate earnings
+            const affiliates = JSON.parse(localStorage.getItem('affiliates')) || [];
+            const myAffiliate = affiliates.find(a => a.userId === currentUser?.id);
+            if (myAffiliate) {
+                document.getElementById('referral-earnings').innerHTML = `
+                    <i class="fas fa-star"></i> You've earned $${myAffiliate.earnings.toFixed(2)} from ${myAffiliate.conversions} referrals!
+                `;
+            }
+        }
+        
+        function copyReferralLink() {
+            const link = document.getElementById('referral-link');
+            link.select();
+            document.execCommand('copy');
+            Utils.showToast('Referral link copied!', 'success');
+        }
+        
+        // ===== BIRTHDAY DISCOUNT =====
+        function setBirthday() {
+            const birthday = document.getElementById('birthday-date').value;
+            if (!birthday) return;
+            
+            MarketingService.setBirthday(currentUser?.id, birthday);
+            Utils.showToast('Birthday saved! Get 20% off on your special day!', 'success');
+        }
+        
+        function checkBirthdayDiscount() {
+            const discount = MarketingService.checkBirthdayDiscount(currentUser?.id);
+            if (discount) {
+                document.getElementById('birthday-message').innerHTML = `
+                    <i class="fas fa-gift"></i> ${discount.message}
+                `;
+            }
+        }
+        
+        // ===== RECENT ORDERS =====
+        function loadRecentOrders(email) {
+            const orders = JSON.parse(localStorage.getItem('AURA_ORDERS')) || [];
+            const userOrders = orders.filter(o => o.customerEmail === email).slice(0, 3);
+            const container = document.getElementById('recent-orders');
+            
+            if (userOrders.length === 0) {
+                container.innerHTML = '<p class="text-muted">No orders yet</p>';
+                return;
+            }
+            
+            container.innerHTML = userOrders.map(order => `
+                <div class="order-item">
+                    <div>Order #${order.id}</div>
+                    <div class="text-warning">$${order.amount?.toFixed(2)}</div>
+                    <div class="text-muted small">${new Date(order.date).toLocaleDateString()}</div>
+                    <span class="badge bg-${order.status === 'delivered' ? 'success' : 'warning'} mt-1">${order.status || 'pending'}</span>
+                </div>
+            `).join('');
+        }
+        
+        function logout() {
+            AuthService.logout();
+            window.location.href = 'index.html';
+        }
+        
+        // Make functions global
+        window.toggle2FA = toggle2FA;
+        window.verify2FA = verify2FA;
+        window.toggleCaptcha = toggleCaptcha;
+        window.testCaptcha = testCaptcha;
+        window.copyReferralLink = copyReferralLink;
+        window.setBirthday = setBirthday;
+        window.logout = logout;
+    </script>
+</body>
+</html>
